@@ -8,7 +8,14 @@ import argparse
 
 def get_id_set(tsv_path):
     with open(tsv_path) as infile:
-        return set([line.split('\t')[0] for line in infile])
+        ids = set()
+        for line in DictReader(infile, dialect='excel-tab'):
+            #if 'is_obsolete' in line and int(line['is_obsolete']):
+            #    continue
+            if 'status' in line and ("MI:C" in line['status']):
+                continue
+            ids.add(line['id'])
+    return ids
 
 
 def validate_biomass_compounds(path, comp_set):
@@ -65,16 +72,16 @@ if __name__ == '__main__':
             complex_ids)
 
         if undef_comps:
-            print("ERROR-Undefined Compounds: " + ", ".join(undef_comps),
-                  file=sys.stderr)
+            print("ERROR-%s Invalid Compounds: %s"
+                  % (len(undef_comps), ", ".join(undef_comps)))
             exit_code = 1
         if undef_rxns:
-            print("ERROR-Undefined Reactions: " + ", ".join(undef_rxns),
-                  file=sys.stderr)
+            print("ERROR-%s Invalid Reactions: %s"
+                  % (len(undef_rxns), ", ".join(undef_rxns)))
             exit_code = 1
         if undef_complex:
-            print("ERROR-Undefined Complexes: " + ", ".join(undef_complex),
-                  file=sys.stderr)
+            print("ERROR-%s Invalid Complexes: %s"
+                  % (len(undef_complex), ", ".join(undef_complex)))
             exit_code = 1
 
     exit(exit_code)
