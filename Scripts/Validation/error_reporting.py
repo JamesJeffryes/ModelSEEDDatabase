@@ -29,7 +29,6 @@ def report_errors(err_type, error_counts):
         raise ValueError('error type cannot be named "branch"')
     error_rep = copy.copy(error_counts)
     error_rep['commit'] = local_head
-    error_rep['branch'] = current_branch
     error_rep['timestamp'] = time.time()
     r.zadd("branch:"+error_rep['branch'],  error_rep['commit'], error_rep['timestamp'],)
     r.hset(err_type, error_rep['commit'], error_rep)
